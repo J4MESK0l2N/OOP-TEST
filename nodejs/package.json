@@ -16,6 +16,6 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "start": "ts-node src/index.ts"
+    "start": "ts-node-dev src/index.ts"
   }
 }

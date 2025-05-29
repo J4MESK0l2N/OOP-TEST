@@ -6,11 +6,9 @@ export const Login = (req: Request, res: Response) => {
 
   try {
     if (username === "admin" && password === "@min1234") {
-      const token = jwt.sign(
-        { id: 1, username: username, password: password, role: role },
-        process.env.JWT_SECRET!,
-        { expiresIn: "2h" }
-      );
+      const token = jwt.sign({ id: 1, username: username, role: role }, process.env.JWT_SECRET!, {
+        expiresIn: "2h",
+      });
 
       res.status(200).send({ data: { token: token }, code: 200, message: "OK" });
       return;

@@ -22,9 +22,11 @@ export function authMiddleWare(req: Request, res: Response, next: NextFunction) 
     }
 
     const payload: PublicUserSchema = result.data;
+
     req.user = new User(payload.id, payload.username, "", payload.role);
     next();
   } catch (err) {
+    console.log("err", err);
     res.status(403).json({ message: "Forbidden" });
   }
 }

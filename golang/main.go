@@ -1,10 +1,10 @@
 package main
 
 import (
-  "log"
-  "net/http"
+	"log"
+	"net/http"
 
-  "test-oop-golang/handlers"
+	"test-oop-golang/handlers"
 )
 
 func main() {

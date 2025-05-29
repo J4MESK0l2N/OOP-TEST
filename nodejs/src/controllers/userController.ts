@@ -27,6 +27,14 @@ export const CreateUser = (req: Request, res: Response) => {
     }
 
     const user_body: CreateUserSchema = result.data;
+
+    for (const u of users) {
+      if (u.username === user_body.username) {
+        res.status(500).send({ message: "Username Duplicate.", code: 500 });
+        return;
+      }
+    }
+
     const user = new User(
       users.length + 1,
       user_body.username,

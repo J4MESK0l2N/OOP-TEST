@@ -33,22 +33,44 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
-	if u.Role == "" {
-		u.Role = "user"
+	for _, user := range user_list {
+		if(user.Username == u.Username) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"code":    500,
+				"message": "Username duplicate.",
+			})
+			return
+		}
+	}
+
+	if u.Username == "" || u.Password == ""  {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"code":    400,
+			"message": "Require Username and Password",
+		})
+		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		http.Error(w, "Password hashing failed", http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"code":    500,
+			"message": "Password hashing failed",
+		})
 		return
 	}
 
 	u.Password = string(hashedPassword)
-	u.ID = len(users) + 1
+	u.ID = len(user_list) + 1 
 
-	users = append(users, u)
+	user_list = append(user_list, u)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":       u.ID,
@@ -60,7 +82,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	secret := os.Getenv("JWT_SECRET")
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"code":    500,
+			"message": "Failed to generate token",
+		})
 		return
 	}
 
